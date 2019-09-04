@@ -3,38 +3,35 @@
   "displayName": "Script700 Helper",
   "description": "Script700/Script700SE support for VSCode",
   "publisher": "dgrfactory",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.37.0"
-  },
-  "categories": [
-    "Programming Languages"
-  ],
+  "version": "0.0.2",
+  "engines": {"vscode": "^1.37.0"},
+  "categories": ["Programming Languages"],
   "contributes": {
-    "languages": [
-      {
-        "id": "script700",
-        "aliases": [
-          "script700"
-        ],
-        "extensions": [
-          ".700",
-          ".7se"
-        ],
-        "configuration": "./language-configuration.json"
-      }
-    ],
-    "grammars": [
-      {
-        "language": "script700",
-        "scopeName": "source.script700",
-        "path": "./syntaxes/script700.tmLanguage.json"
-      }
-    ]
+    "languages": [{
+      "id": "script700",
+      "aliases": ["script700"],
+      "extensions": [".700", ".7se"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "script700",
+      "scopeName": "source.script700",
+      "path": "./syntaxes/script700.tmLanguage.json"
+    }]
   },
+  "activationEvents": ["*"],
+  "main": "./out/extension.js",
   "devDependencies": {
+    "@types/node": "^12.7.3",
+    "@types/vscode": "^1.37.0",
     "generator-code": "^1.2.5",
+    "tsc": "^1.20150623.0",
+    "typescript": "^3.6.2",
     "vsce": "^1.66.0",
     "yo": "^3.1.0"
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./"
   }
 }
