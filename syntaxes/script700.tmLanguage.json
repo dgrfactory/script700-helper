@@ -1,134 +1,138 @@
 {
-	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-	"name": "script700",
-	"patterns": [
-		{"include": "#label"},
-		{"include": "#wait"},
-		{"include": "#control"},
-		{"include": "#calculate"},
-		{"include": "#jump"},
-		{"include": "#return"},
-		{"include": "#nop"},
-		{"include": "#exit"},
-		{"include": "#include"},
-		{"include": "#comments"}
-	],
-	"repository": {
-		"label": {
-			"patterns": [{
-				"match": "(^|\\s)(\\:((0x|\\$)[0-9A-Fa-f]+|[0-9]+|\\:))",
-				"captures": {
-					"2": {"patterns": [{"name": "constant.language.script700", "match": ".+"}]}
-				}
-			}]
-		},
-		"wait": {
-			"patterns": [{
-				"match": "(^|\\s)([Ww])\\s+([^\\s]+)?",
-				"captures": {
-					"2": {"patterns": [{"name": "support.function.script700", "match": ".+"}]},
-					"3": {"patterns": [{"include": "#parameter-group"}]}
-				}
-			}]
-		},
-		"control": {
-			"patterns": [{
-				"match": "(^|\\s)([MASUDVmasudv])\\s+([^\\s]+)?\\s*([^\\s]+)?",
-				"captures": {
-					"2": {"patterns": [{"name": "support.function.script700", "match": ".+"}]},
-					"3": {"patterns": [{"include": "#parameter-group"}]},
-					"4": {"patterns": [{"include": "#parameter-group"}]}
-				}
-			}, {
-				"match": "(^|\\s)([Cc])\\s+([^\\s]+)?\\s*([^\\s]+)?",
-				"captures": {
-					"2": {"patterns": [{"name": "keyword.control.script700", "match": ".+"}]},
-					"3": {"patterns": [{"include": "#parameter-group"}]},
-					"4": {"patterns": [{"include": "#parameter-group"}]}
-				}
-			}]
-		},
-		"calculate": {
-			"patterns": [{
-				"match": "(^|\\s)([Nn])\\s+([^\\s]+)?\\s*([^\\s]+)?\\s*([^\\s]+)?",
-				"captures": {
-					"2": {"patterns": [{"name": "support.function.script700", "match": ".+"}]},
-					"3": {"patterns": [{"include": "#parameter-group"}]},
-					"4": {"patterns": [{"name": "keyword.operater.script700", "match": ".+"}]},
-					"5": {"patterns": [{"include": "#parameter-group"}]}
-				}
-			}]
-		},
-		"jump": {
-			"patterns": [{
-				"match": "(^|\\s)([Bb][Rr][Aa]|[Bb][Ee][Qq]|[Bb][Nn][Ee]|[Bb][Gg][Ee]|[Bb][Ll][Ee]|[Bb][Gg][Tt]|[Bb][Ll][Tt]|[Bb][Cc][Cc]|[Bb][Ll][Oo]|[Bb][Hh][Ii]|[Bb][Cc][Ss])\\s+([^\\s]+)?",
-				"captures": {
-					"2": {"patterns": [{"name": "keyword.control.script700", "match": ".+"}]},
-					"3": {"patterns": [{"name": "constant.language.script700", "match": ".+"}]}
-				}
-			}]
-		},
-		"return": {
-			"patterns": [{
-				"match": "(^|\\s)([RFrf][01]?|[Qq])",
-				"captures": {
-					"2": {"patterns": [{"name": "keyword.control.script700", "match": ".+"}]}
-				}
-			}]
-		},
-		"nop": {
-			"patterns": [{
-				"match": "(^|\\s)([Nn][Oo][Pp])",
-				"captures": {
-					"2": {"patterns": [{"name": "markup.italic.script700", "match": ".+"}]}
-				}
-			}]
-		},
-		"exit": {
-			"patterns": [{
-				"match": "(^|\\s)([Ee])",
-				"captures": {
-					"2": {"patterns": [{"name": "storage.type.script700", "match": ".+"}]}
-				}
-			}]
-		},
-		"include": {
-			"patterns": [{
-				"match": "(^|\\s)(\\#[Ii][TBtb]?)\\s+([^\\s]+)?",
-				"captures": {
-					"2": {"patterns": [{"name": "storage.modifiers.script700", "match": ".+"}]},
-					"3": {"patterns": [{"include": "#string-literal"}]}
-				}
-			}]
-		},
-		"parameter-group": {
-			"patterns": [{
-				"name": "constant.numeric.script700",
-				"match": "((0[Xx]|\\$)[0-9A-Fa-f]+|[0-9]+)"
-			}, {
-				"name": "variable.language.script700",
-				"match": "([\\?])"
-			}]
-		},
-		"string-literal": {
-			"name": "string.quoted.double.script700",
-			"begin": "\"",
-			"end": "\"",
-			"patterns": [
-				{
-					"name": "constant.character.escape.script700",
-					"match": "\\\\."
-				}
-			]
-		},
-		"comments": {
-			"patterns": [{
-				"match": "(^|\\s)(;.*)",
-				"captures": {
-					"2": {"patterns": [{"name": "comment.line.script700", "match": ".+"}]}
-				}
-			}]
-		}
-	},
-	"scopeName": "source.script700"
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "script700",
+  "patterns": [
+    {"include": "#label"},
+    {"include": "#wait"},
+    {"include": "#control"},
+    {"include": "#calculate"},
+    {"include": "#jump"},
+    {"include": "#return"},
+    {"include": "#nop"},
+    {"include": "#exit"},
+    {"include": "#include"},
+    {"include": "#comments"}
+  ],
+  "repository": {
+    "label": {
+      "patterns": [{
+        "match": "(^|\\s)(\\:((0x|\\$)[0-9A-Fa-f]+|[0-9]+|\\:))",
+        "captures": {
+          "2": {"patterns": [{"name": "entity.name.tag.script700", "match": ".+"}]}
+        }
+      }]
+    },
+    "wait": {
+      "patterns": [{
+        "match": "(^|\\s)([Ww])\\s+([^\\s]+)?",
+        "captures": {
+          "2": {"patterns": [{"name": "support.function.script700", "match": ".+"}]},
+          "3": {"patterns": [{"include": "#parameter-group"}]}
+        }
+      }]
+    },
+    "control": {
+      "patterns": [{
+        "match": "(^|\\s)([MASUDVmasudv])\\s+([^\\s]+)?\\s*([^\\s]+)?",
+        "captures": {
+          "2": {"patterns": [{"name": "support.function.script700", "match": ".+"}]},
+          "3": {"patterns": [{"include": "#parameter-group"}]},
+          "4": {"patterns": [{"include": "#parameter-group"}]}
+        }
+      }, {
+        "match": "(^|\\s)([Cc])\\s+([^\\s]+)?\\s*([^\\s]+)?",
+        "captures": {
+          "2": {"patterns": [{"name": "keyword.control.script700", "match": ".+"}]},
+          "3": {"patterns": [{"include": "#parameter-group"}]},
+          "4": {"patterns": [{"include": "#parameter-group"}]}
+        }
+      }]
+    },
+    "calculate": {
+      "patterns": [{
+        "match": "(^|\\s)([Nn])\\s+([^\\s]+)?\\s*([^\\s]+)?\\s*([^\\s]+)?",
+        "captures": {
+          "2": {"patterns": [{"name": "support.function.script700", "match": ".+"}]},
+          "3": {"patterns": [{"include": "#parameter-group"}]},
+          "4": {"patterns": [{"name": "keyword.operater.script700", "match": ".+"}]},
+          "5": {"patterns": [{"include": "#parameter-group"}]}
+        }
+      }]
+    },
+    "jump": {
+      "patterns": [{
+        "match": "(^|\\s)([Bb][Rr][Aa]|[Bb][Ee][Qq]|[Bb][Nn][Ee]|[Bb][Gg][Ee]|[Bb][Ll][Ee]|[Bb][Gg][Tt]|[Bb][Ll][Tt]|[Bb][Cc][Cc]|[Bb][Ll][Oo]|[Bb][Hh][Ii]|[Bb][Cc][Ss])\\s+([^\\s]+)?",
+        "captures": {
+          "2": {"patterns": [{"name": "keyword.control.script700", "match": ".+"}]},
+          "3": {"patterns": [{"name": "entity.name.tag.script700", "match": ".+"}]}
+        }
+      }]
+    },
+    "return": {
+      "patterns": [{
+        "match": "(^|\\s)([RFrf][01]?|[Qq])",
+        "captures": {
+          "2": {"patterns": [{"name": "keyword.control.script700", "match": ".+"}]}
+        }
+      }]
+    },
+    "nop": {
+      "patterns": [{
+        "match": "(^|\\s)([Nn][Oo][Pp])",
+        "captures": {
+          "2": {"patterns": [{"name": "markup.italic.script700", "match": ".+"}]}
+        }
+      }]
+    },
+    "exit": {
+      "patterns": [{
+        "match": "(^|\\s)([Ee])",
+        "captures": {
+          "2": {"patterns": [{"name": "storage.type.script700", "match": ".+"}]}
+        }
+      }]
+    },
+    "include": {
+      "patterns": [{
+        "match": "(^|\\s)(\\#[Ii][TBtb]?)\\s+([^\\s]+)?",
+        "captures": {
+          "2": {"patterns": [{"name": "storage.modifier.script700", "match": ".+"}]},
+          "3": {"patterns": [{"include": "#string-literal"}]}
+        }
+      }]
+    },
+    "parameter-group": {
+      "patterns": [{
+        "name": "entity.name.tag.script700",
+        "match": "l((0[Xx]|\\$)[0-9A-Fa-f]+|[0-9]+)"
+      }, {
+        "name": "support.type.script700",
+        "match": "[#iowx]|[rd][bwd]?"
+      }, {
+        "name": "constant.numeric.script700",
+        "match": "(0[Xx]|\\$)[0-9A-Fa-f]+|[0-9]+"
+      }, {
+        "name": "support.variable.script700",
+        "match": "[\\?]"
+      }]
+    },
+    "string-literal": {
+      "name": "string.quoted.double.script700",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [{
+        "name": "constant.character.escape.script700",
+        "match": "\\\\."
+      }]
+    },
+    "comments": {
+      "patterns": [{
+        "match": "(^|\\s)([;\/'#].*)",
+        "captures": {
+          "2": {"patterns": [{"name": "comment.line.script700", "match": ".+"}]}
+        }
+      }]
+    }
+  },
+  "scopeName": "source.script700"
 }
