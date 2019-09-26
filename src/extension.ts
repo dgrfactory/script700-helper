@@ -12,62 +12,62 @@ export function activate(context: vscode.ExtensionContext) {
       kind: vscode.CompletionItemKind.Field,
     },
     'i': {
-      title: 'SPC700 In Port',
+      title: 'SPC700 In Port (8-bit)',
       description: ['`i0` ~ `i3`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'o': {
-      title: 'SPC700 Out Port',
+      title: 'SPC700 Out Port (8-bit)',
       description: ['`o0` ~ `o3`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'w': {
-      title: 'SNESAPU Working Memory',
+      title: 'SNESAPU Working Memory (32-bit)',
       description: ['`w0` ~ `w7`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'r': {
-      title: '64KB RAM Value (byte)',
+      title: '64KB RAM Value (8-bit)',
       description: ['`r0` ~ `r65535`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'rb': {
-      title: '64KB RAM Value (byte)',
+      title: '64KB RAM Value (8-bit)',
       description: ['`rb0` ~ `rb65535`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'rw': {
-      title: '64KB RAM Value (word)',
+      title: '64KB RAM Value (16-bit)',
       description: ['`rw0` ~ `rw65535`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'rd': {
-      title: '64KB RAM Value (double word)',
+      title: '64KB RAM Value (32-bit)',
       description: ['`rd0` ~ `rd65535`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'x': {
-      title: '64Byte XRAM Value (byte)',
+      title: '64Byte XRAM Value (8-bit)',
       description: ['`x0` ~ `x63`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'd': {
-      title: 'SNESAPU Data Area (byte)',
+      title: 'SNESAPU Data Area (8-bit)',
       description: ['`d0` ~'],
       kind: vscode.CompletionItemKind.Field,
     },
     'db': {
-      title: 'SNESAPU Data Area (byte)',
+      title: 'SNESAPU Data Area (8-bit)',
       description: ['`db0` ~'],
       kind: vscode.CompletionItemKind.Field,
     },
     'dw': {
-      title: 'SNESAPU Data Area (word)',
+      title: 'SNESAPU Data Area (16-bit)',
       description: ['`dw0` ~'],
       kind: vscode.CompletionItemKind.Field,
     },
     'dd': {
-      title: 'SNESAPU Data Area (double word)',
+      title: 'SNESAPU Data Area (32-bit)',
       description: ['`dd0` ~'],
       kind: vscode.CompletionItemKind.Field,
     },
@@ -155,15 +155,15 @@ export function activate(context: vscode.ExtensionContext) {
     ':': {
       title: 'Label',
       description: ['`:0` ~ `:1023`'],
-      kind: vscode.CompletionItemKind.Enum,
+      kind: vscode.CompletionItemKind.EnumMember,
     },
     '::': {
       title: 'Exit from Script Zone',
       description: ['`::`'],
-      kind: vscode.CompletionItemKind.Enum,
+      kind: vscode.CompletionItemKind.EnumMember,
     },
     'w': {
-      title: 'Wait',
+      title: 'Wait / Sleep',
       description: ['`w <CLOCK>`', '`<CLOCK>` = 2,048kHz, 2048000 = 1sec'],
       kind: vscode.CompletionItemKind.Function,
     },
@@ -416,17 +416,41 @@ export function activate(context: vscode.ExtensionContext) {
     },
   };
 
+  const DataDescriptions: {[key: string]: {title: string, description: string[], kind: vscode.CompletionItemKind}} = {
+    '#i': {
+      title: 'Include Text File',
+      description: ['`#i "<FILE>"`', "`<FILE>` = Relative Path"],
+      kind: vscode.CompletionItemKind.Interface,
+    },
+    '#it': {
+      title: 'Include Text File',
+      description: ['`#it "<FILE>"`', "`<FILE>` = Relative Path"],
+      kind: vscode.CompletionItemKind.Interface,
+    },
+    '#ib': {
+      title: 'Include Binary File',
+      description: ['`#ib "<FILE>"`', "`<FILE>` = Relative Path"],
+      kind: vscode.CompletionItemKind.Interface,
+    },
+  };
+
   type ZONES = 'script' | 'startup' | 'data';
 
   const getComment = (document: vscode.TextDocument, lineIndex: number): string[] => {
-    const self = document.lineAt(lineIndex);
-    if (/([;']|\/\/|\#\s)(.+)/.exec(self.text)) return [RegExp.$2.replace(/^\s+|\s+$/g, '')];
+    const self = document.lineAt(lineIndex).text;
+    if (/([;']|\/\/|\#\s)(.+)/.exec(self)) return [RegExp.$2.replace(/^\s+|\s+$/g, '')];
 
     const comments: string[] = [];
+    let f_start: boolean = false;
+
     for (let i = lineIndex - 1; i >= 0; i--) {
-      const line = document.lineAt(i);
-      if (/([;']|\/\/|\#\s)(.+)/.exec(line.text)) comments.unshift(RegExp.$2.replace(/^\s+|\s+$/g, ''));
-      else break;
+      const line = document.lineAt(i).text;
+      if (/([;']|\/\/|\#\s)(.+)/.exec(line)) {
+        comments.unshift(RegExp.$2.replace(/^\s+|\s+$/g, ''));
+        f_start = true;
+      } else if (/^\s*$/.test(line)) {
+        if (f_start) break;
+      } else break;
     }
 
     return comments.map((v) => v.replace(/^[\-\=\*\#]+$/, '')).filter((v) => v);
@@ -440,7 +464,7 @@ export function activate(context: vscode.ExtensionContext) {
   };
 
   const createCompletionWithComment = (document: vscode.TextDocument, lineIndex: number, label: string): vscode.CompletionItem => {
-    return createCompletion(label, `LABEL: ${label}`, getComment(document, lineIndex), vscode.CompletionItemKind.Enum);
+    return createCompletion(label, `LABEL: ${label}`, getComment(document, lineIndex), vscode.CompletionItemKind.EnumMember);
   };
 
   const scan = (document: vscode.TextDocument, regexp: RegExp, callback: (...groups: string[]) => string): vscode.CompletionItem[] => {
@@ -449,9 +473,10 @@ export function activate(context: vscode.ExtensionContext) {
 
     const compiletions: vscode.CompletionItem[] = [];
     for (let i = 0; i < document.lineCount; i++) {
-      const line = document.lineAt(i);
+      const line = document.lineAt(i).text;
       let result = null;
-      while (result = regexp.exec(line.text)) {
+
+      while (result = regexp.exec(line)) {
         compiletions.push(createCompletionWithComment(document, i, callback(...result)));
       }
     }
@@ -579,7 +604,7 @@ export function activate(context: vscode.ExtensionContext) {
       });
     } else if (/(^|\s)(bra|beq|bne|bge|ble|bgt|blt|bcc|blo|bhi|bcs)\s+$/i.test(line)) {
       const compiletions = scan(document, /\:(((0x|\$)[0-9a-f]+)|[0-9]+)/ig, (m, g1) => g1);
-      compiletions.push(createCompletion('w', 'SNESAPU Working Memory', ['w0 ~ w7'], vscode.CompletionItemKind.Field));
+      compiletions.push(createCompletion('w', 'SNESAPU Working Memory (32-bit)', ['w0 ~ w7'], vscode.CompletionItemKind.Field));
       return compiletions;
     } else if (/(^|\s)$/.test(line)) {
       return Object.keys(FunctionDescriptions).map((word) => {
@@ -617,6 +642,18 @@ export function activate(context: vscode.ExtensionContext) {
     }
   };
 
+  const createCompletionForData = (document: vscode.TextDocument, line: string)
+    : vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList> => {
+    if (/([;']|\/\/|\#\s)/.test(line)) {
+      return;
+    } else if (/(^|\s)$/.test(line)) {
+      return Object.keys(DataDescriptions).map((word) => {
+        const map = DataDescriptions[word];
+        return createCompletion(word, map.title, map.description, map.kind);
+      });
+    }
+  };
+
   const completionItemProvider = vscode.languages.registerCompletionItemProvider('script700', {
     provideCompletionItems(document: vscode.TextDocument, position: vscode.Position)
     : vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList> {
@@ -624,6 +661,7 @@ export function activate(context: vscode.ExtensionContext) {
       const zone = getCurrentZone(document, position);
       if (zone === 'script') return createCompletionForScript(document, line);
       else if (zone === 'startup') return createCompletionForStartup(document, line);
+      else if (zone === 'data') return createCompletionForData(document, line);
     }
   }, ' ', '\t');
 
