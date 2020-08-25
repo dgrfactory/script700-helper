@@ -38,12 +38,12 @@
   ],
   "main": "./out/extension.js",
   "devDependencies": {
-    "@types/node": "^12.7.3",
-    "@types/vscode": "^1.37.0",
-    "generator-code": "^1.2.5",
+    "@types/node": "^12.12.54",
+    "@types/vscode": "^1.48.0",
+    "generator-code": "^1.2.21",
     "tsc": "^1.20150623.0",
-    "typescript": "^3.6.2",
-    "vsce": "^1.69.0",
+    "typescript": "^3.9.7",
+    "vsce": "^1.79.2",
     "yo": "^3.1.1"
   },
   "scripts": {
