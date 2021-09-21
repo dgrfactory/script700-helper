@@ -1,435 +1,453 @@
 import * as vscode from 'vscode';
 
+type DESCRIPTION = {title: string[], description: string[], kind: vscode.CompletionItemKind};
+type DESCRIPTION_DSP = {command: RegExp} & DESCRIPTION;
+
 export function activate(context: vscode.ExtensionContext) {
   const ParameterGroup1Words = ['#', 'i', 'o', 'w', 'r', 'rb', 'rw', 'rd', 'x', 'd', 'db', 'dw', 'dd', 'l'];
   const ParameterGroup2Words = ['i', 'o', 'w', 'r', 'rb', 'rw', 'rd', 'x', 'd', 'db', 'dw', 'dd'];
   const ParameterGroup3Words = ['#', 'i', 'o', 'w', 'r', 'rb', 'rw', 'rd', 'x', 'd', 'db', 'dw', 'dd', 'l'];
 
-  const ParameterDescriptions: {[key: string]: {title: string, description: string[], kind: vscode.CompletionItemKind}} = {
+  const ParameterDescriptions: {[key: string]: DESCRIPTION} = {
     '#': {
-      title: ['固定数値', 'Literal Number'].join('\r\n'),
+      title: ['固定数値', 'Literal number'],
       description: ['`#0`\\~, `#-1`\\~, `#0x00`\\~, `#$00`\\~'],
       kind: vscode.CompletionItemKind.Field,
     },
     'i': {
-      title: ['SPC700 入力ポート', 'SPC700 In Port (8-bit)'].join('\r\n'),
+      title: ['SPC700 入力ポート', 'Latest read value of SPC700 ports (8-bit)'],
       description: ['`i0`\\~`i3`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'o': {
-      title: ['SPC700 出力ポート', 'SPC700 Out Port (8-bit)'].join('\r\n'),
+      title: ['SPC700 出力ポート', 'Latest written value of SPC700 ports (8-bit)'],
       description: ['`o0`\\~`o3`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'w': {
-      title: ['SNESAPU ユーザ ワーク メモリ', 'SNESAPU User Work Memory (32-bit)'].join('\r\n'),
+      title: ['Script700 ユーザワークメモリ', 'User working memory of Script700 (32-bit)'],
       description: ['`w0`\\~`w7`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'r': {
-      title: 'SPC700 64KB RAM (8-bit)',
+      title: ['64KB メインメモリ', '64KB main RAM of APU (8-bit)'],
       description: ['`r0`\\~`r65535`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'rb': {
-      title: 'SPC700 64KB RAM (8-bit)',
+      title: ['64KB メインメモリ', '64KB main RAM of APU (8-bit)'],
       description: ['`rb0`\\~`rb65535`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'rw': {
-      title: 'SPC700 64KB RAM (16-bit)',
+      title: ['64KB メインメモリ', '64KB main RAM of APU (16-bit)'],
       description: ['`rw0`\\~`rw65535`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'rd': {
-      title: 'SPC700 64KB RAM (32-bit)',
+      title: ['64KB メインメモリ', '64KB main RAM of APU (32-bit)'],
       description: ['`rd0`\\~`rd65535`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'x': {
-      title: 'SPC700 64Byte Extra RAM (8-bit)',
+      title: ['IPL 用作業メモリ', 'IPL work memory (8-bit)'],
       description: ['`x0`\\~`x63`'],
       kind: vscode.CompletionItemKind.Field,
     },
     'd': {
-      title: ['SNESAPU データ領域', 'SNESAPU Data Area (8-bit)'].join('\r\n'),
+      title: ['Script700 データ領域', 'Data area of Script700 (8-bit)'],
       description: ['`d0`\\~'],
       kind: vscode.CompletionItemKind.Field,
     },
     'db': {
-      title: ['SNESAPU データ領域', 'SNESAPU Data Area (8-bit)'].join('\r\n'),
+      title: ['Script700 データ領域', 'Data area of Script700 (8-bit)'],
       description: ['`db0`\\~'],
       kind: vscode.CompletionItemKind.Field,
     },
     'dw': {
-      title: ['SNESAPU データ領域', 'SNESAPU Data Area (16-bit)'].join('\r\n'),
+      title: ['Script700 データ領域', 'Data area of Script700 (16-bit)'],
       description: ['`dw0`\\~'],
       kind: vscode.CompletionItemKind.Field,
     },
     'dd': {
-      title: ['SNESAPU データ領域', 'SNESAPU Data Area (32-bit)'].join('\r\n'),
+      title: ['Script700 データ領域', 'Data area of Script700 (32-bit)'],
       description: ['`dd0`\\~'],
       kind: vscode.CompletionItemKind.Field,
     },
     'l': {
-      title: ['ラベル番号', 'Label Index'].join('\r\n'),
+      title: ['ラベル番号', 'Index of label'],
       description: ['`l0`\\~`l1023`'],
       kind: vscode.CompletionItemKind.Field,
     },
   };
 
-  const OperatorDescriptions: {[key: string]: {title: string, description: string[], kind: vscode.CompletionItemKind}} = {
+  const OperatorDescriptions: {[key: string]: DESCRIPTION} = {
     '+': {
-      title: ['加算', 'Addition'].join('\r\n'),
+      title: ['加算', 'Add a variable'],
       description: ['`n <A> + <B>`', 'B = A + B'],
       kind: vscode.CompletionItemKind.Operator,
     },
     '-': {
-      title: ['減算', 'Subtraction'].join('\r\n'),
+      title: ['減算', 'Subtract a variable'],
       description: ['`n <A> - <B>`', 'B = A - B'],
       kind: vscode.CompletionItemKind.Operator,
     },
     '*': {
-      title: ['乗算', 'Multiplication'].join('\r\n'),
+      title: ['乗算', 'Multiply a variable'],
       description: ['`n <A> * <B>`', 'B = A * B'],
       kind: vscode.CompletionItemKind.Operator,
     },
     '/': {
-      title: ['除算 (符号あり)', 'Division (signed)'].join('\r\n'),
-      description: ['`n <A> / <B>`', 'B = A / B, like IDiv'],
+      title: ['除算 (符号あり)', 'Divide a variable (signed)'],
+      description: ['`n <A> / <B>`', 'B = A / B, like IDIV'],
       kind: vscode.CompletionItemKind.Operator,
     },
     '\\': {
-      title: ['除算 (符号なし)', 'Division (unsigned)'].join('\r\n'),
-      description: ['`n <A> \\ <B>`', 'B = A / B, like Div'],
+      title: ['除算 (符号なし)', 'Set remainder of dividing a variable (unsigned)'],
+      description: ['`n <A> \\ <B>`', 'B = A / B, like DIV'],
       kind: vscode.CompletionItemKind.Operator,
     },
     '%': {
-      title: ['余り (符号あり)', 'Division Remainder (signed)'].join('\r\n'),
-      description: ['`n <A> % <B>`', 'B = A % B, like IDiv'],
+      title: ['余り (符号あり)', 'Set remainder of dividing a variable (signed)'],
+      description: ['`n <A> % <B>`', 'B = A % B, like IDIV'],
       kind: vscode.CompletionItemKind.Operator,
     },
     '$': {
-      title: ['余り (符号なし)', 'Division Remainder (unsigned)'].join('\r\n'),
-      description: ['`n <A> $ <B>`', 'B = A % B, like Div'],
+      title: ['余り (符号なし)', 'Set remainder of dividing a variable (unsigned)'],
+      description: ['`n <A> $ <B>`', 'B = A % B, like DIV'],
       kind: vscode.CompletionItemKind.Operator,
     },
     '&': {
-      title: ['論理積', 'Bitwise, And'].join('\r\n'),
+      title: ['論理積', 'Perform a logical AND'],
       description: ['`n <A> & <B>`', 'B = A & B'],
       kind: vscode.CompletionItemKind.Operator,
     },
     '|': {
-      title: ['論理和', 'Bitwise, Or'].join('\r\n'),
+      title: ['論理和', 'Perform a logical OR'],
       description: ['`n <A> | <B>`', 'B = A | B'],
       kind: vscode.CompletionItemKind.Operator,
     },
     '^': {
-      title: ['排他的論理和', 'Bitwise, XOr'].join('\r\n'),
+      title: ['排他的論理和', 'Perform a logical XOR'],
       description: ['`n <A> ^ <B>`', 'B = A ^ B'],
       kind: vscode.CompletionItemKind.Operator,
     },
     '<': {
-      title: ['ビット左シフト', 'Bitwise, Left Shift'].join('\r\n'),
-      description: ['`n <A> < <B>`', 'B = A << B, like ShL'],
+      title: ['ビット左シフト', 'Perform a logical LEFT shift'],
+      description: ['`n <A> < <B>`', 'B = A << B, like SHL'],
       kind: vscode.CompletionItemKind.Operator,
     },
     '_': {
-      title: ['ビット右シフト', 'Bitwise, Right Shift (signed)'].join('\r\n'),
+      title: ['ビット右シフト', 'Perform a logical RIGHT shift (signed)'],
       description: ['`n <A> _ <B>`', 'B = A >> B, like SAR'],
       kind: vscode.CompletionItemKind.Operator,
     },
     '>': {
-      title: ['ビット右シフト', 'Bitwise, Right Shift (unsigned)'].join('\r\n'),
-      description: ['`n <A> > <B>`', 'B = A >> B, like ShR'],
+      title: ['ビット右シフト', 'Perform a logical RIGHT shift (unsigned)'],
+      description: ['`n <A> > <B>`', 'B = A >> B, like SHR'],
       kind: vscode.CompletionItemKind.Operator,
     },
     '!': {
-      title: ['否定', 'Bitwise, Not'].join('\r\n'),
-      description: ['`n <A> ! <B>`', 'B = Not A, like B = A XOr -1'],
+      title: ['否定', 'Perform a logical NOT'],
+      description: ['`n <A> ! <B>`', 'B = Not A, like B = A ^ -1'],
       kind: vscode.CompletionItemKind.Operator,
     },
   };
 
-  const FunctionDescriptions: {[key: string]: {title: string, description: string[], kind: vscode.CompletionItemKind}} = {
+  const FunctionDescriptions: {[key: string]: DESCRIPTION} = {
     ':': {
-      title: ['ラベル', 'Label'].join('\r\n'),
+      title: ['ラベル', 'Label'],
       description: ['`:0`\\~`:1023`'],
       kind: vscode.CompletionItemKind.EnumMember,
     },
     '::': {
-      title: ['スクリプト領域を終了', 'Exit from Script Zone'].join('\r\n'),
+      title: ['スクリプト領域を終了', 'Exit from SCRIPT zone, change to STARTUP zone'],
       description: ['`::`'],
       kind: vscode.CompletionItemKind.EnumMember,
     },
     'w': {
-      title: ['待機', 'Sleep'].join('\r\n'),
+      title: ['待機', 'Pauses running Script700'],
       description: ['`w <CLOCK>`', '`<CLOCK>` = 2,048kHz, 2048000 = 1sec'],
       kind: vscode.CompletionItemKind.Function,
     },
     'm': {
-      title: ['代入', 'Move Value'].join('\r\n'),
+      title: ['代入', 'Copy a value of variable'],
       description: ['`m <A> <B>`', 'Copy from A to B'],
       kind: vscode.CompletionItemKind.Function,
     },
     'c': {
-      title: ['比較・動的ポインタ指定', 'Compare, Dynamic Pointer'].join('\r\n'),
+      title: ['比較・動的ポインタ指定', 'Compare variables, or set dynamic pointer'],
       description: ['`c <A> <B>`'],
       kind: vscode.CompletionItemKind.Function,
     },
     'a': {
-      title: ['加算', 'Addition'].join('\r\n'),
+      title: ['加算', 'Add a variable'],
       description: ['`a <A> <B>`', 'B = A + B'],
       kind: vscode.CompletionItemKind.Function,
     },
     's': {
-      title: ['減算', 'Subtraction'].join('\r\n'),
+      title: ['減算', 'Subtract a variable'],
       description: ['`s <A> <B>`', 'B = A - B'],
       kind: vscode.CompletionItemKind.Function,
     },
     'u': {
-      title: ['乗算', 'Multiplication'].join('\r\n'),
+      title: ['乗算', 'Multiply a variable'],
       description: ['`u <A> <B>`', 'B = A * B'],
       kind: vscode.CompletionItemKind.Function,
     },
     'd': {
-      title: ['除算 (符号あり)', 'Division (signed)'].join('\r\n'),
+      title: ['除算 (符号あり)', 'Divide a variable (signed)'],
       description: ['`d <A> <B>`', 'B = A / B, like IDiv'],
       kind: vscode.CompletionItemKind.Function,
     },
     'n': {
-      title: ['演算', 'Universal Arithmetic'].join('\r\n'),
+      title: ['演算', 'Performs various operations on variables'],
       description: ['`n <A> <OP> <B>`', 'B = A ? B'],
       kind: vscode.CompletionItemKind.Function,
     },
     'bra': {
-      title: ['ラベルへジャンプ (無条件)', 'Jump to Label (always)'].join('\r\n'),
+      title: ['ラベルへジャンプ (無条件)', 'Jump to label (always)'],
       description: ['`bra <LABEL>`'],
       kind: vscode.CompletionItemKind.Function,
     },
     'beq': {
-      title: ['ラベルへジャンプ (一致)', 'Jump to Label (equals)'].join('\r\n'),
-      description: ['`beq <LABEL>`', 'Jump if `C <A> <B>` matches "A == B"'],
+      title: ['ラベルへジャンプ (一致)', 'Jump to label (equals)'],
+      description: ['`beq <LABEL>`', 'Jump if `c <A> <B>` matches "A == B"'],
       kind: vscode.CompletionItemKind.Function,
     },
     'bne': {
-      title: ['ラベルへジャンプ (不一致)', 'Jump to Label (not equals)'].join('\r\n'),
-      description: ['`bne <LABEL>`', 'Jump if `C <A> <B>` matches "A != B"'],
+      title: ['ラベルへジャンプ (不一致)', 'Jump to label (not equals)'],
+      description: ['`bne <LABEL>`', 'Jump if `c <A> <B>` matches "A != B"'],
       kind: vscode.CompletionItemKind.Function,
     },
     'bge': {
-      title: ['ラベルへジャンプ (符号あり、以上)', 'Jump to Label (signed, greater than or equals)'].join('\r\n'),
-      description: ['`bge <LABEL>`', 'Jump if `C <A> <B>` matches "A <= B"'],
+      title: ['ラベルへジャンプ (符号あり、以上)', 'Jump to label (signed, greater than or equals)'],
+      description: ['`bge <LABEL>`', 'Jump if `c <A> <B>` matches "A <= B"'],
       kind: vscode.CompletionItemKind.Function,
     },
     'ble': {
-      title: ['ラベルへジャンプ (符号あり、以下)', 'Jump to Label (signed, lesser than or equals)'].join('\r\n'),
-      description: ['`ble <LABEL>`', 'Jump if `C <A> <B>` matches "A >= B"'],
+      title: ['ラベルへジャンプ (符号あり、以下)', 'Jump to label (signed, lesser than or equals)'],
+      description: ['`ble <LABEL>`', 'Jump if `c <A> <B>` matches "A >= B"'],
       kind: vscode.CompletionItemKind.Function,
     },
     'bgt': {
-      title: ['ラベルへジャンプ (符号あり、超過)', 'Jump to Label (signed, greater than)'].join('\r\n'),
-      description: ['`bgt <LABEL>`', 'Jump if `C <A> <B>` matches "A < B"'],
+      title: ['ラベルへジャンプ (符号あり、超過)', 'Jump to label (signed, greater than)'],
+      description: ['`bgt <LABEL>`', 'Jump if `c <A> <B>` matches "A < B"'],
       kind: vscode.CompletionItemKind.Function,
     },
     'blt': {
-      title: ['ラベルへジャンプ (符号あり、未満)', 'Jump to Label (signed, lesser than)'].join('\r\n'),
-      description: ['`blt <LABEL>`', 'Jump if `C <A> <B>` matches "A > B"'],
+      title: ['ラベルへジャンプ (符号あり、未満)', 'Jump to label (signed, lesser than)'],
+      description: ['`blt <LABEL>`', 'Jump if `c <A> <B>` matches "A > B"'],
       kind: vscode.CompletionItemKind.Function,
     },
     'bcc': {
-      title: ['ラベルへジャンプ (符号なし、以上)', 'Jump to Label (unsigned, greater than or equals)'].join('\r\n'),
-      description: ['`bcc <LABEL>`', 'Jump if `C <A> <B>` matches "A <= B"'],
+      title: ['ラベルへジャンプ (符号なし、以上)', 'Jump to label (unsigned, greater than or equals)'],
+      description: ['`bcc <LABEL>`', 'Jump if `c <A> <B>` matches "A <= B"'],
       kind: vscode.CompletionItemKind.Function,
     },
     'blo': {
-      title: ['ラベルへジャンプ (符号なし、以下)', 'Jump to Label (unsigned, lesser than or equals)'].join('\r\n'),
-      description: ['`blo <LABEL>`', 'Jump if `C <A> <B>` matches "A >= B"'],
+      title: ['ラベルへジャンプ (符号なし、以下)', 'Jump to label (unsigned, lesser than or equals)'],
+      description: ['`blo <LABEL>`', 'Jump if `c <A> <B>` matches "A >= B"'],
       kind: vscode.CompletionItemKind.Function,
     },
     'bhi': {
-      title: ['ラベルへジャンプ (符号なし、超過)', 'Jump to Label (unsigned, greater than)'].join('\r\n'),
-      description: ['`bhi <LABEL>`', 'Jump if `C <A> <B>` matches "A < B"'],
+      title: ['ラベルへジャンプ (符号なし、超過)', 'Jump to label (unsigned, greater than)'],
+      description: ['`bhi <LABEL>`', 'Jump if `c <A> <B>` matches "A < B"'],
       kind: vscode.CompletionItemKind.Function,
     },
     'bcs': {
-      title: ['ラベルへジャンプ (符号なし、未満)', 'Jump to Label (unsigned, lesser than)'].join('\r\n'),
-      description: ['`bcs <LABEL>`', 'Jump if `C <A> <B>` matches "A > B"'],
+      title: ['ラベルへジャンプ (符号なし、未満)', 'Jump to label (unsigned, lesser than)'],
+      description: ['`bcs <LABEL>`', 'Jump if `c <A> <B>` matches "A > B"'],
       kind: vscode.CompletionItemKind.Function,
     },
     'r': {
-      title: ['直前のジャンプに戻る', 'Return to after bxx command'].join('\r\n'),
+      title: ['直前のジャンプに戻る', "Return to after 'bxx' command", '@since 2.12.0'],
       description: ['`r`'],
       kind: vscode.CompletionItemKind.Function,
     },
     'r1': {
-      title: ['ジャンプの戻り先を記録する', 'Resume bxx position stacking'].join('\r\n'),
+      title: ['ジャンプの戻り先を記録する', "Resume 'bxx' position stacking", '@since 2.15.2'],
       description: ['`r1`'],
       kind: vscode.CompletionItemKind.Function,
     },
     'r0': {
-      title: ['ジャンプの戻り先を記録しない', 'Suspend bxx position stacking'].join('\r\n'),
+      title: ['ジャンプの戻り先を記録しない', "Suspend 'bxx' position stacking", '@since 2.15.2'],
       description: ['`r0`'],
       kind: vscode.CompletionItemKind.Function,
     },
     'f': {
-      title: ['ポート書き込みをフラッシュ', 'Flush SPC700 ports'].join('\r\n'),
-      description: ['`f`'],
+      title: ['ポート書き込みをフラッシュ後、ポート 0 が一致するまで待機', 'Flush SPC700 ports, and wait for `i0` == `o0`', '@since 2.17.2'],
+      description: ['`f`', '※ 実行後、`c <A> <B>` の `<A>` に待機時間が設定されます。'],
       kind: vscode.CompletionItemKind.Function,
     },
     'f1': {
-      title: ['ポート書き込みを即時反映する', 'Resume SPC700 ports writing'].join('\r\n'),
+      title: ['ポート書き込みを即時反映する', 'Resume SPC700 ports writing', '@since 2.17.2'],
       description: ['`f1`'],
       kind: vscode.CompletionItemKind.Function,
     },
     'f0': {
-      title: ['ポート書き込みを即時反映しない', 'Suspend SPC700 ports writing'].join('\r\n'),
+      title: ['ポート書き込みを即時反映しない', 'Suspend SPC700 ports writing', '@since 2.17.2'],
       description: ['`f0`'],
       kind: vscode.CompletionItemKind.Function,
     },
+    'wi': {
+      title: ['ポートの読み込みを待機', 'Wait reading SPC700 ports', '@since 2.19.0'],
+      description: ['`wi <PORT>`', '※ `<PORT>` = `0`\\~`3`', '実行後、`c <A> <B>` の `<A>` に待機時間が設定されます。'],
+      kind: vscode.CompletionItemKind.Function,
+    },
+    'wo': {
+      title: ['ポートの書き込みを待機', 'Wait writing SPC700 ports', '@since 2.19.0'],
+      description: ['`wo <PORT>`', '※ `<PORT>` = `0`\\~`3`', '実行後、`c <A> <B>` の `<A>` に待機時間が設定されます。'],
+      kind: vscode.CompletionItemKind.Function,
+    },
+    'bp': {
+      title: ['ブレイクポイント設定', 'Set break-point address', '@since 2.19.0'],
+      description: ['`bp <ADDR>`', '`<ADDR>` = `0`\\~`65535`'],
+      kind: vscode.CompletionItemKind.Function,
+    },
     'q': {
-      title: ['スクリプト処理を終了', 'Stop running script'].join('\r\n'),
+      title: ['スクリプト処理を終了', 'Stop running script', '@since 2.12.0'],
       description: ['`q`'],
       kind: vscode.CompletionItemKind.Function,
     },
     'nop': {
-      title: ['何もしない', 'No Operation'].join('\r\n'),
+      title: ['何もしない', 'No operation', '@since 2.11.0'],
       description: ['`nop`'],
       kind: vscode.CompletionItemKind.Function,
     },
     'e': {
-      title: ['スクリプト領域を終了', 'Exit from Script Zone'].join('\r\n'),
+      title: ['スクリプト領域を終了', 'Exit from SCRIPT zone, change to STARTUP zone'],
       description: ['`e`'],
       kind: vscode.CompletionItemKind.Function,
     },
     '#i': {
-      title: ['テキスト ファイルを取り込む', 'Include Text File'].join('\r\n'),
-      description: ['`#i "<FILE>"`', "`<FILE>` = Relative Path"],
+      title: ['テキストファイルを取り込む', 'Include a text file', '@since 2.17.0'],
+      description: ['`#i "<FILE>"`', "`<FILE>` = Relative path"],
       kind: vscode.CompletionItemKind.Interface,
     },
     '#it': {
-      title: ['テキスト ファイルを取り込む', 'Include Text File'].join('\r\n'),
-      description: ['`#it "<FILE>"`', "`<FILE>` = Relative Path"],
+      title: ['テキストファイルを取り込む', 'Include a text file', '@since 2.17.0'],
+      description: ['`#it "<FILE>"`', "`<FILE>` = Relative path"],
       kind: vscode.CompletionItemKind.Interface,
     },
     '#ib': {
-      title: ['バイナリ ファイルを取り込む', 'Include Binary File'].join('\r\n'),
-      description: ['`#ib "<FILE>"`', "`<FILE>` = Relative Path"],
+      title: ['バイナリファイルを取り込む', 'Include a binary file', '@since 2.17.0'],
+      description: ['`#ib "<FILE>"`', "`<FILE>` = Relative path"],
       kind: vscode.CompletionItemKind.Interface,
     },
   };
 
-  const DSPOptionDescriptions: {[key: string]: {title: string, description: string[], kind: vscode.CompletionItemKind}} = {
+  const DSPOptionDescriptions: {[key: string]: DESCRIPTION} = {
     'm': {
-      title: ['ミュート', 'Mute'].join('\r\n'),
-      description: ['`m <SOUND>,!`', '`<SOUND>` = Number of Sound Source (0\\~255)'],
+      title: ['特定の波形をミュート', 'Mute specific tones'],
+      description: ['`m <SOUND>,!`', '`<SOUND>` = Tone number (0\\~255)'],
       kind: vscode.CompletionItemKind.Function,
     },
     'c': {
-      title: ['波形番号を変更', 'Note Change'].join('\r\n'),
-      description: ['`c <SOUND>,! <CHANGE>`', '`<SOUND>` = Number of Sound Source (0\\~255)',
-        '`<CHANGE>` = Number of Sound Source (0\\~255)'],
+      title: ['特定の波形番号を変更', 'Change specific tones'],
+      description: ['`c <SOUND>,! <CHANGE>`', '`<SOUND>` = Tone number (0\\~255)',
+        '`<CHANGE>` = Tone number (0\\~255)'],
       kind: vscode.CompletionItemKind.Function,
     },
     'd': {
-      title: ['発音周波数を変更', 'Note Detune'].join('\r\n'),
-      description: ['`d <SOUND> <RATE>`', '`<SOUND>` = Number of Sound Source (0\\~255)',
-        '`<RATE>` = Relative Rate'],
+      title: ['発音周波数を変更', 'Detune specific tones'],
+      description: ['`d <SOUND> <RATE>`', '`<SOUND>` = Tone number (0\\~255)',
+        '`<RATE>` = Relative rate'],
       kind: vscode.CompletionItemKind.Function,
     },
     'v': {
-      title: ['音量を変更', 'Volume Level'].join('\r\n'),
-      description: ['`v <SOUND>,!,l,r,lr,vl,vr,el,er <VOLUME>`', '`<SOUND>` = Number of Sound Source (0\\~255)',
+      title: ['音量を変更', 'Change volume level of tone', '@since 2.11.2'],
+      description: ['`v <SOUND>,!,l,r,lr,vl,vr,el,er <VOLUME>`', '`<SOUND>` = Tone number (0\\~255)',
         '`<VOLUME>` = Level base on 65536, x0.5 = 32768 / x2 = 131072'],
       kind: vscode.CompletionItemKind.Function,
     },
     'e': {
-      title: ['拡張コマンド領域を終了', 'Exit from Startup Zone'].join('\r\n'),
+      title: ['拡張コマンド領域を終了', 'Exit from STARTUP zone, change to DATA zone'],
       description: ['`e`'],
       kind: vscode.CompletionItemKind.Function,
     },
     '#i': {
-      title: ['テキスト ファイルを取り込む', 'Include Text File'].join('\r\n'),
-      description: ['`#i "<FILE>"`', "`<FILE>` = Relative Path"],
+      title: ['テキストファイルを取り込む', 'Include a text file', '@since 2.17.0'],
+      description: ['`#i "<FILE>"`', "`<FILE>` = Relative path"],
       kind: vscode.CompletionItemKind.Interface,
     },
     '#it': {
-      title: ['テキスト ファイルを取り込む', 'Include Text File'].join('\r\n'),
-      description: ['`#it "<FILE>"`', "`<FILE>` = Relative Path"],
+      title: ['テキストファイルを取り込む', 'Include a text file', '@since 2.17.0'],
+      description: ['`#it "<FILE>"`', "`<FILE>` = Relative path"],
       kind: vscode.CompletionItemKind.Interface,
     },
     '#ib': {
-      title: ['バイナリ ファイルを取り込む', 'Include Binary File'].join('\r\n'),
-      description: ['`#ib "<FILE>"`', "`<FILE>` = Relative Path"],
+      title: ['バイナリファイルを取り込む', 'Include a binary file', '@since 2.17.0'],
+      description: ['`#ib "<FILE>"`', "`<FILE>` = Relative path"],
       kind: vscode.CompletionItemKind.Interface,
     },
   };
 
-  const DSPTargetDescriptions: {[key: string]: {command: RegExp, title: string, description: string[], kind: vscode.CompletionItemKind}} = {
+  const DSPTargetDescriptions: {[key: string]: DESCRIPTION_DSP} = {
     '!': {
       command: /[mcdv]/,
-      title: ['全ての波形番号', 'All Sources'].join('\r\n'),
-      description: ['For all sound sources (0\\~255)'],
+      title: ['全ての波形番号', 'All tones'],
+      description: ['For all tones (0\\~255)'],
       kind: vscode.CompletionItemKind.Field,
     },
     'l': {
       command: /[v]/,
-      title: ['マスター音量＋エコー音量 (左)', 'Left of Master Volume and Echo Level'].join('\r\n'),
+      title: ['マスター音量＋エコー音量 (左)', 'Left of MASTER and ECHO levels'],
       description: [],
       kind: vscode.CompletionItemKind.Field,
     },
     'r': {
       command: /[v]/,
-      title: ['マスター音量＋エコー音量 (右)', 'Right of Master Volume and Echo Level'].join('\r\n'),
+      title: ['マスター音量＋エコー音量 (右)', 'Right of MASTER and ECHO levels'],
       description: [],
       kind: vscode.CompletionItemKind.Field,
     },
     'lr': {
       command: /[v]/,
-      title: ['マスター音量＋エコー音量 (左右)', 'All of Master Volume and Echo Level'].join('\r\n'),
+      title: ['マスター音量＋エコー音量 (左右)', 'All of MASTER and ECHO levels', '@since 2.14.5'],
       description: [],
       kind: vscode.CompletionItemKind.Field,
     },
     'vl': {
       command: /[v]/,
-      title: ['マスター音量 (左)', 'Left of Master Volume'].join('\r\n'),
+      title: ['マスター音量 (左)', 'Left of MASTER level'],
       description: [],
       kind: vscode.CompletionItemKind.Field,
     },
     'vr': {
       command: /[v]/,
-      title: ['マスター音量 (右)', 'Right of Master Volume'].join('\r\n'),
+      title: ['マスター音量 (右)', 'Right of MASTER level'],
       description: [],
       kind: vscode.CompletionItemKind.Field,
     },
     'el': {
       command: /[v]/,
-      title: ['エコー音量 (左)', 'Left of Master Echo Level'].join('\r\n'),
+      title: ['エコー音量 (左)', 'Left of MASTER and ECHO levels'],
       description: [],
       kind: vscode.CompletionItemKind.Field,
     },
     'er': {
       command: /[v]/,
-      title: ['エコー音量 (右)', 'Right of Master Echo Level'].join('\r\n'),
+      title: ['エコー音量 (右)', 'Right of MASTER and ECHO levels'],
       description: [],
       kind: vscode.CompletionItemKind.Field,
     },
   };
 
-  const DataDescriptions: {[key: string]: {title: string, description: string[], kind: vscode.CompletionItemKind}} = {
+  const DataDescriptions: {[key: string]: DESCRIPTION} = {
     '#i': {
-      title: ['テキスト ファイルを取り込む', 'Include Text File'].join('\r\n'),
-      description: ['`#i "<FILE>"`', "`<FILE>` = Relative Path"],
+      title: ['テキストファイルを取り込む', 'Include a text file', '@since 2.17.0'],
+      description: ['`#i "<FILE>"`', "`<FILE>` = Relative path"],
       kind: vscode.CompletionItemKind.Interface,
     },
     '#it': {
-      title: ['テキスト ファイルを取り込む', 'Include Text File'].join('\r\n'),
-      description: ['`#it "<FILE>"`', "`<FILE>` = Relative Path"],
+      title: ['テキストファイルを取り込む', 'Include a text file', '@since 2.17.0'],
+      description: ['`#it "<FILE>"`', "`<FILE>` = Relative path"],
       kind: vscode.CompletionItemKind.Interface,
     },
     '#ib': {
-      title: ['バイナリ ファイルを取り込む', 'Include Binary File'].join('\r\n'),
-      description: ['`#ib "<FILE>"`', "`<FILE>` = Relative Path"],
+      title: ['バイナリファイルを取り込む', 'Include a binary file', '@since 2.17.0'],
+      description: ['`#ib "<FILE>"`', "`<FILE>` = Relative path"],
       kind: vscode.CompletionItemKind.Interface,
     },
   };
@@ -481,15 +499,20 @@ export function activate(context: vscode.ExtensionContext) {
     }
   };
 
-  const createCompletion = (label: string, title: string, description: string[], kind: vscode.CompletionItemKind): vscode.CompletionItem => {
+  const createCompletion = (label: string, title: string[], description: string[], kind: vscode.CompletionItemKind): vscode.CompletionItem => {
     const item = new vscode.CompletionItem(label, kind);
-    item.detail = title;
-    if (description.length) item.documentation = new vscode.MarkdownString(description.join('  \r\n'));
+    item.detail = title[0];
+    if (description.length) item.documentation = new vscode.MarkdownString([
+      title.slice(1).join('  \r\n'),
+      '\r\n\r\n---\r\n\r\n',
+      description.join('  \r\n')
+    ].join(''));
+    else item.documentation = new vscode.MarkdownString(title.slice(1).join('  \r\n'));
     return item;
   };
 
   const createCompletionWithComment = (document: vscode.TextDocument, lineIndex: number, label: string): vscode.CompletionItem => {
-    return createCompletion(label, [`ラベル番号`, `Label Number`].join('\r\n'),
+    return createCompletion(label, [`ラベル番号`, `Label Number`],
       getComment(document, lineIndex), vscode.CompletionItemKind.EnumMember);
   };
 
@@ -528,20 +551,20 @@ export function activate(context: vscode.ExtensionContext) {
     if (FunctionDescriptions[word]) {
       return new vscode.Hover([
         {language: 'script700', value: word},
-        {language: 'plaintext', value: FunctionDescriptions[word].title},
+        {language: 'markdown', value: FunctionDescriptions[word].title.join('  \r\n')},
         FunctionDescriptions[word].description.join('  \r\n'),
       ]);
     } else if (OperatorDescriptions[word]) {
       return new vscode.Hover([
         {language: 'script700', value: word},
-        {language: 'plaintext', value: OperatorDescriptions[word].title},
+        {language: 'markdown', value: OperatorDescriptions[word].title.join('  \r\n')},
         OperatorDescriptions[word].description.join('  \r\n'),
       ]);
     } else if (/^(bra|beq|bne|bge|ble|bgt|blt|bcc|blo|bhi|bcs)$/.test(command) && /(0x|\$)?[0-9a-f]+/i.exec(word)) {
       const label = `:${word}`;
       for (let i = 0; i < document.lineCount - 1; i++) if (document.lineAt(i).text.indexOf(label) >= 0) return new vscode.Hover([
         {language: 'script700', value: word},
-        {language: 'plaintext', value: [`ラベル番号`, `Label Number`].join('\r\n')},
+        {language: 'markdown', value: [`ラベル番号`, `Label Number`].join('  \r\n')},
         getComment(document, i).join('  \r\n'),
       ]);
     }
@@ -550,7 +573,7 @@ export function activate(context: vscode.ExtensionContext) {
     if (ParameterDescriptions[parameterMark]) {
       return new vscode.Hover([
         {language: 'plaintext', value: word},
-        {language: 'plaintext', value: ParameterDescriptions[parameterMark].title},
+        {language: 'markdown', value: ParameterDescriptions[parameterMark].title.join('  \r\n')},
         ParameterDescriptions[parameterMark].description.concat(getLiteral(RegExp.$2)).join('  \r\n'),
       ]);
     }
@@ -559,7 +582,7 @@ export function activate(context: vscode.ExtensionContext) {
     if (ParameterDescriptions[parameterMark]) {
       return new vscode.Hover([
         {language: 'plaintext', value: word},
-        {language: 'plaintext', value: ParameterDescriptions[parameterMark].title},
+        {language: 'markdown', value: ParameterDescriptions[parameterMark].title.join('  \r\n')},
         ParameterDescriptions[parameterMark].description.join('  \r\n'),
       ]);
     }
@@ -567,7 +590,7 @@ export function activate(context: vscode.ExtensionContext) {
     if (/^\-?(0x|\$)?[0-9a-f]+$/i.test(word)) {
       return new vscode.Hover([
         {language: 'plaintext', value: word},
-        {language: 'plaintext', value: ParameterDescriptions['#'].title},
+        {language: 'markdown', value: ParameterDescriptions['#'].title.join('  \r\n')},
         getLiteral(word).join('  \r\n'),
       ]);
     }
@@ -577,7 +600,7 @@ export function activate(context: vscode.ExtensionContext) {
     if (DSPOptionDescriptions[word]) {
       return new vscode.Hover([
         {language: 'script700', value: word},
-        {language: 'plaintext', value: DSPOptionDescriptions[word].title},
+        {language: 'markdown', value: DSPOptionDescriptions[word].title.join('  \r\n')},
         DSPOptionDescriptions[word].description.join('  \r\n'),
       ]);
     }
@@ -585,7 +608,7 @@ export function activate(context: vscode.ExtensionContext) {
     if (DSPTargetDescriptions[word]) {
       return new vscode.Hover([
         {language: 'plaintext', value: word},
-        {language: 'plaintext', value: DSPTargetDescriptions[word].title},
+        {language: 'markdown', value: DSPTargetDescriptions[word].title.join('  \r\n')},
         DSPTargetDescriptions[word].description.join('  \r\n'),
       ]);
     }
@@ -626,7 +649,7 @@ export function activate(context: vscode.ExtensionContext) {
         const map = ParameterDescriptions[word];
         return createCompletion(word, map.title, map.description, map.kind);
       });
-    } else if (/(^|\s)([w])\s+$/i.test(line)) {
+    } else if (/(^|\s)([w][io]?|bp)\s+$/i.test(line)) {
       return ParameterGroup3Words.map((word) => {
         const map = ParameterDescriptions[word];
         return createCompletion(word, map.title, map.description, map.kind);
