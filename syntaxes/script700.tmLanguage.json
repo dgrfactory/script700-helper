@@ -24,7 +24,7 @@
     },
     "wait": {
       "patterns": [{
-        "match": "(^|\\s)([Ww])\\s+([^\\s]+)?",
+        "match": "(^|\\s)([Ww][IOio]?)\\s+([^\\s]+)?",
         "captures": {
           "2": {"patterns": [{"name": "support.function.script700", "match": ".+"}]},
           "3": {"patterns": [{"include": "#parameter-group"}]}
@@ -33,6 +33,22 @@
     },
     "control": {
       "patterns": [{
+        "match": "(^|\\s)([Cc])\\s+([^\\s]+)?\\s*([^\\s]+)?",
+        "captures": {
+          "2": {"patterns": [{"name": "keyword.control.script700", "match": ".+"}]},
+          "3": {"patterns": [{"include": "#parameter-group"}]},
+          "4": {"patterns": [{"include": "#parameter-group"}]}
+        }
+      }, {
+        "match": "(^|\\s)([Bb][Pp])\\s+([^\\s]+)?",
+        "captures": {
+          "2": {"patterns": [{"name": "keyword.control.script700", "match": ".+"}]},
+          "3": {"patterns": [{"include": "#parameter-group"}]}
+        }
+      }]
+    },
+    "calculate": {
+      "patterns": [{
         "match": "(^|\\s)([MASUDVmasudv])\\s+([^\\s]+)?\\s*([^\\s]+)?",
         "captures": {
           "2": {"patterns": [{"name": "support.function.script700", "match": ".+"}]},
@@ -40,16 +56,6 @@
           "4": {"patterns": [{"include": "#parameter-group"}]}
         }
       }, {
-        "match": "(^|\\s)([Cc])\\s+([^\\s]+)?\\s*([^\\s]+)?",
-        "captures": {
-          "2": {"patterns": [{"name": "keyword.control.script700", "match": ".+"}]},
-          "3": {"patterns": [{"include": "#parameter-group"}]},
-          "4": {"patterns": [{"include": "#parameter-group"}]}
-        }
-      }]
-    },
-    "calculate": {
-      "patterns": [{
         "match": "(^|\\s)([Nn])\\s+([^\\s]+)?\\s*([^\\s]+)?\\s*([^\\s]+)?",
         "captures": {
           "2": {"patterns": [{"name": "support.function.script700", "match": ".+"}]},

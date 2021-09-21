@@ -3,10 +3,14 @@
   "displayName": "Script700 Helper",
   "description": "Script700/Script700SE support for VSCode",
   "publisher": "dgrfactory",
-  "version": "0.1.1",
+  "version": "0.2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dgrfactory/script700-helper.git"
+  },
   "icon": "img/icon128.png",
   "engines": {
-    "vscode": "^1.37.0"
+    "vscode": "^1.60.0"
   },
   "categories": [
     "Programming Languages"
@@ -38,16 +42,17 @@
   ],
   "main": "./out/extension.js",
   "devDependencies": {
-    "@types/node": "^12.12.54",
-    "@types/vscode": "^1.48.0",
-    "generator-code": "^1.2.21",
+    "@types/node": "^12.20.25",
+    "@types/vscode": "^1.60.0",
+    "generator-code": "^1.6.0",
     "tsc": "^1.20150623.0",
-    "typescript": "^3.9.7",
-    "vsce": "^1.79.2",
+    "typescript": "^3.9.10",
+    "vsce": "^1.99.0",
     "yo": "^3.1.1"
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./"
+    "compile": "tsc -p ./ --outDir out",
+    "build": "node_modules/.bin/vsce package"
   }
 }
