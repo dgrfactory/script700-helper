@@ -5,12 +5,14 @@
 - Script700/Script700SE の構文ハイライト、入力支援機能を提供する VSCode 拡張です。
 - Script700 は SPC プレイヤーにおいて SPC700 を外部から操作するための言語です。
 - dgrfactory が提供する Script700 互換機能に準じます。 すべてのコマンドはサポートしていません。
+- SNES SPC700 Player v2.19.0 までのコマンドをサポートしています。
 
 ## Overview
 
 - This extension provides highlighting for the Script700/Script700SE language.
 - Script700 is script language for manipulating SPC700 via SPC player.
 - Conforms to the Script700 specification in SNESAPU by dgrfactory, not all commands are supported.
+- Script700 commands up to version 2.19.0 of SNES SPC700 Player is supported.
 
 ## Links
 

@@ -1,7 +1,10 @@
+.gitignore
 .vscode/**
 .vscode-test/**
-.gitignore
-vsc-extension-quickstart.md
+.test*
+out/script700-helper-*/**
+out/src
 test
+vsc-extension-quickstart.md
 *.bat
 *.vsix
