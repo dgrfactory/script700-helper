@@ -7,4 +7,5 @@ out/src
 test
 vsc-extension-quickstart.md
 *.bat
+*.txt
 *.vsix
