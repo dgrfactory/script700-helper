@@ -3,7 +3,7 @@
   "displayName": "Script700 Helper",
   "description": "Script700/Script700SE support for VSCode",
   "publisher": "dgrfactory",
-  "version": "0.2.1",
+  "version": "0.3.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/dgrfactory/script700-helper.git"
@@ -48,7 +48,7 @@
     "tsc": "^1.20150623.0",
     "typescript": "^3.9.10",
     "vsce": "^2.10.0",
-    "yo": "^4.3.0"
+    "yo": "^4.3.1"
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
