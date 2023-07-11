@@ -113,7 +113,7 @@
         "match": "l((0[Xx]|\\$)[0-9A-Fa-f]+|[0-9]+)"
       }, {
         "name": "support.type.script700",
-        "match": "[#iowx]|[rd][bwd]?"
+        "match": "[#IOWXiowx!]|[RDrd][BWDbwd]?|[VEve][LRlr]|[LRlr]|LR|lr"
       }, {
         "name": "constant.numeric.script700",
         "match": "(0[Xx]|\\$)[0-9A-Fa-f]+|[0-9]+"
