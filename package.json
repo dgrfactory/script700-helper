@@ -44,11 +44,11 @@
   "devDependencies": {
     "@types/node": "^12.20.25",
     "@types/vscode": "^1.60.0",
-    "generator-code": "^1.6.0",
+    "generator-code": "^1.11.16",
     "tsc": "^1.20150623.0",
     "typescript": "^3.9.10",
     "vsce": "^2.10.0",
-    "yo": "^4.3.1"
+    "yo": "^6.0.0"
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
