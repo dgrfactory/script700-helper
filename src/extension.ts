@@ -283,8 +283,8 @@ export function activate(context: vscode.ExtensionContext) {
     'w': {
       title: ['待機', 'Pauses running Script700'],
       description: ['Syntax: `w <CLOCK>`', '`<CLOCK>` = 2,048kHz, 2048000 = 1sec',
-        '指定したクロック数 (2,048 kHz) だけ Script700 の動作を停止させます。'
-          + ' Script700 実行中は SPC700 と DSP の処理が停止するため、`w` コマンドで SPC700 と DSP の処理を再開します。'],
+        '指定したクロック数 (2,048 kHz) だけ Script700 の動作を停止します。',
+        'Script700 実行中は SPC700 と DSP の処理が停止するため、`w` コマンドで SPC700 と DSP の処理を再開します。'],
       kind: vscode.CompletionItemKind.Function,
     },
     'm': {
@@ -298,7 +298,8 @@ export function activate(context: vscode.ExtensionContext) {
     'c': {
       title: ['比較・動的ポインタ指定', 'Compare variables, or set dynamic pointer'],
       description: ['Syntax: `c <C1> <C2>`',
-        '`<C1>` と `<C2>` の値を記憶しておき、`bxx` 系コマンドの条件分岐指定・動的ポインタで使用します。'],
+        '`<C1>` と `<C2>` に指定されたパラメータ値を記憶します。',
+        '記憶した値は、`bxx` 系コマンドの条件分岐指定・動的ポインタで使用します。'],
       kind: vscode.CompletionItemKind.Function,
     },
     'a': {
@@ -437,17 +438,17 @@ export function activate(context: vscode.ExtensionContext) {
       kind: vscode.CompletionItemKind.Function,
     },
     'r1': {
-      title: ['ジャンプの戻り先を記録する', "Resume `bxx` position stacking", '@since 2.15.2'],
+      title: ['ジャンプの戻り先を記憶する', "Resume `bxx` position stacking", '@since 2.15.2'],
       description: ['Syntax: `r1`',
-        '`r` コマンドを実行するための戻り先を記録します。',
+        '`r` コマンドを実行するための戻り先を記憶します。',
         '`r` コマンドを実行すると、自動的に `r1` コマンドが実行されます。'],
       kind: vscode.CompletionItemKind.Function,
     },
     'r0': {
-      title: ['ジャンプの戻り先を記録しない', "Suspend `bxx` position stacking", '@since 2.15.2'],
+      title: ['ジャンプの戻り先を記憶しない', "Suspend `bxx` position stacking", '@since 2.15.2'],
       description: ['Syntax: `r0`',
-        '`r` コマンドを実行するための戻り先を記録しません。',
-        '記録を再開する場合は `r1` コマンドを実行します。'],
+        '`r` コマンドを実行するための戻り先を記憶しません。',
+        '記憶を再開する場合は `r1` コマンドを実行します。'],
       kind: vscode.CompletionItemKind.Function,
     },
     'f': {
